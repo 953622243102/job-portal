@@ -4,7 +4,6 @@ from .serializers import RegisterSerializer, JobsSerializer, ApplicationSerializ
 from rest_framework import status
 from django.contrib.auth.models import User
 from .models import Job, Application
-from django.contrib.auth import authenticate
 
 @api_view(['GET'])
 def hello_api(request):
@@ -27,21 +26,12 @@ def basic_login(request):
     username=request.data.get('username')
     password=request.data.get('password')
     
-    user = authenticate(username=username, password=password)
-
-    if user is not None:
-        return Response({
-            "user_id": user.id,
-            "username": user.username,
-            "message": "Login Successfully!"
-        }, status=status.HTTP_200_OK)
-    else:
-        return Response({"message": "Invalid credentials"}, status=status.HTTP_400_BAD_REQUEST)
-    ##try:
-    ##    user=User.objects.get(username=username, password=password)  #get the username and password from the User table, and check with above username and password
-    ##   return Response({"user_id":user.id, "username":user.username,"message":"Login Successfully!"},status=status.HTTP_200_OK)
-    ##except User.DoesNotExist:
-    ##    return Response({"message":"Invalid credentials"},status=status.HTTP_400_BAD_REQUEST)
+    
+    try:
+        user=User.objects.get(username=username, password=password)  #get the username and password from the User table, and check with above username and password
+        return Response({"user_id":user.id, "username":user.username,"message":"Login Successfully!"},status=status.HTTP_200_OK)
+    except User.DoesNotExist:
+        return Response({"message":"Invalid credentials"},status=status.HTTP_400_BAD_REQUEST)
 
 ################## Job Listing API ##################
 @api_view(['GET'])
